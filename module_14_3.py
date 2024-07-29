@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 import asyncio
 
-api = ""
+api = "-----------------------------------------"
 bot = Bot(token=api)
 dp = Dispatcher(bot, storage=MemoryStorage())
 # Инициализация клавиатуры и создание кнопок
@@ -87,14 +87,23 @@ async def send_calories(message, state):
     await state.finish()
 
 
+# После кнопки "Купить" четыре фото с названием, описанием и ценой. Предложение о покупке
 @dp.message_handler(text="Купить")
 async def get_buying_list(message):
-    with open("files_photo/i_4.webp", "rb") as photo_file:
-        for i in range(1, 5):
-            await message.answer_photo(photo_file, f"Название: продукт{i} | "
-                                                   f"Описание: о продукте{i} |"
-                                                   f" Цена: {i * 100}", reply_markup=kb_1)
+    photo_path = "files_photo/i_4.webp"
+    with open(photo_path, "rb") as photo_file:
+        photo = photo_file.read()
+    for i in range(1, 5):
+        await message.answer(f"Название: продукт{i} | Описание: о продукте:{i} |"
+                             f" Цена: {i * 100}")
+        await message.answer_photo(photo)
     await message.answer("Выберите продукт для покупки", reply_markup=kb_1)
+
+
+# Сообщение об удачной покупке, после нажатия кнопки Produkt{i}
+@dp.callback_query_handler(text="product_buying")
+async def set_age(call):
+    await call.message.answer("Вы успешно приобрели продукт")
 
 
 if __name__ == "__main__":
